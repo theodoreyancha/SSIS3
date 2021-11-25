@@ -1,0 +1,91 @@
+{% extends "base.html" %}
+	{% block content %}
+		<script>
+			$(document).ready( function () {
+				$( "#update" ).dialog({
+					autoOpen: false,
+					width: 500
+				});
+				var table = $('#myTable').DataTable();
+				$('table').on('click','#delBut', function(){
+					var r = confirm("Confirm deletion?");
+					if (r == true){
+						var currentRow = $(this).closest('tr').find("#code_s").text();
+						$.post('http://127.0.0.1:5000/course/delete', {currentRow}, function(){
+						});
+						table.row($(this).parents('tr')).remove().draw();
+					};
+				});
+				$('table').on('click','#updbut', function(){
+					var oldcode = $(this).closest("tr").find("#code_s").text(); 
+					var code = $(this).closest("tr").find("#code_s").text(); 
+					var namey = $(this).closest("tr").find("#name_s").text(); 
+					var coll = $(this).closest("tr").find("#coll_s").text(); 
+					$("#update").dialog("open");
+					$("#ocode").val(oldcode);//view only
+					$("#codes").val(code);
+					$("#names").val(namey);
+					$("#colleges").val(coll);
+				});
+			});
+		</script>	
+		<form action = "/course/back"type = "submit">
+			<button class="btn-primary btn" >Back</button>
+		</form>
+		<div class="d-flex justify-content-center text-center">
+			<h1 class="font-weight-bold" id="title">Course</h1>
+		</div>
+		<div class="container">
+			<div class='row'>
+				<div class='col'>
+					<form class="d-flex justify-content-center py-2" action="/course/course_add/" method="post">
+						<button type="submit" class="btn-lg btn-link btn-block" id="loginBtn">Add</button>
+					</form>
+				</div>
+			</div>
+		</div> 
+		<div class='container'>
+			<table class="display table table-striped table-hover" id="myTable">
+				 <thead>
+					<tr>
+					  <th scope="col">Code</th>
+					  <th scope="col">Name</th>
+					  <th scope="col">College</th>
+					  <th scope="col">Task</th>
+					</tr>
+				 </thead>
+				 <tbody>
+					{% for row in data %}    
+					<tr>
+						<td id="code_s">{{row[0]}}</td>
+						<td id="name_s">{{row[1]}}</td>
+						<td id="coll_s">{{row[2]}}</td>
+						<td>  
+							<button type="button" class="btn" id="delBut">Del</button>						
+							<button type="btn" class="btn" id="updbut">Upd</button>
+						</td>
+					</tr>
+					{% endfor %}
+				 </tbody>
+				 <div id="update" title="update_dialog">
+					 <form action="/course/update" method="post"> 
+						<div class="form-group">
+							<input type="text" id="ocode" class="form-control" name="olcode"readonly>
+						</div>
+						<div class="form-group">
+							<input type="text" id="codes" class="form-control" placeholder="Code" name="code">
+						</div>
+						<div class="form-group">
+							<input type="text" id="names" class="form-control" placeholder="Name" name="cname">
+						</div>
+						<div class="form-group">
+							<input type="text" id="colleges" class="form-control" placeholder="College" name="college">
+						</div>
+						<form class="d-flex justify-content-center py-2">
+							<button type="submit" name="submit" class="btn-lg" id="loginBtn" onclick="return confirm('IS IT CONFIRM?')">Submit</button>
+						</form>
+					</form>
+				 </div>
+			</table>
+		</div>
+	{% endblock %}
